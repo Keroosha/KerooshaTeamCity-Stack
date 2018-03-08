@@ -1,0 +1,41 @@
+version: "3"
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: teamcity
+      POSTGRES_USER: teamcity
+    volumes:
+      - database:/var/lib/postgresql/data
+  
+  buildAgent:
+    image: jetbrains/teamcity-agent
+    restart: always
+    environment:
+      SERVER_URL: teamcity:8111
+      AGENT_NAME: dockerImageBuilder
+      DOCKER_IN_DOCKER: start
+    volumes:
+      - buildAgentConfig:/data/teamcity_agent/conf
+      - dockerVolumes:/var/lib/docker
+    privileged: true
+    depends_on:
+      - teamcity
+
+  teamcity:
+    image: jetbrains/teamcity-server
+    ports:
+      - 4000:8111
+    volumes:
+      - teamcityData:/data/teamcity_server/datadir
+      - teamcityLog:/opt/teamcity/logs
+    depends_on:
+      - db
+    
+volumes:
+  database:
+  buildAgentConfig:
+  dockerVolumes:
+  teamcityData:
+  teamcityLog:
