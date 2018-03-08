@@ -9,8 +9,8 @@ services:
     volumes:
       - database:/var/lib/postgresql/data
   
-  buildAgent:
-    image: jetbrains/teamcity-agent
+  build_agent:
+    build: ./DComposeBuildAgent
     restart: always
     environment:
       SERVER_URL: teamcity:8111
