@@ -8,6 +8,8 @@ services:
       POSTGRES_USER: teamcity
     volumes:
       - database:/var/lib/postgresql/data
+    networks:
+      - backend
   
   build_agent:
     build: ./DComposeBuildAgent
@@ -22,16 +24,19 @@ services:
     privileged: true
     depends_on:
       - teamcity
+    networks: 
+      - backend
 
   teamcity:
     image: jetbrains/teamcity-server
-    ports:
-      - 4000:8111
     volumes:
       - teamcityData:/data/teamcity_server/datadir
       - teamcityLog:/opt/teamcity/logs
     depends_on:
       - db
+    networks:
+      - frontend
+      - backend
     
 volumes:
   database:
@@ -39,3 +44,7 @@ volumes:
   dockerVolumes:
   teamcityData:
   teamcityLog:
+
+networks: 
+  frontend:
+  backend:
